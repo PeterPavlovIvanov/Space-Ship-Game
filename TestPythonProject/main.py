@@ -1,5 +1,6 @@
 import pygame
 import random
+import math
 
 pygame.init()
 
@@ -27,10 +28,12 @@ x_player_move_left = 0
 x_player_move_right = 0
 y_player_move_up = 0
 y_player_move_down = 0
+player_tilt = 0
 
 
-def player(x, y):
-    screen.blit(playerImg, (x, y))
+def player(x, y, player_tilt):
+    player_img_cpy = pygame.transform.rotate(playerImg, player_tilt)
+    screen.blit(player_img_cpy, (x - (player_img_cpy.get_width() / 2), y - (player_img_cpy.get_height() / 2)))
 
 
 # Asteroid ----------------------------------------------------------------------------------
@@ -100,8 +103,10 @@ while applicationProcess:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
                 x_player_move_left += 0.18
+                player_tilt += math.pi
             if event.key == pygame.K_RIGHT:
                 x_player_move_right += 0.18
+                player_tilt += -math.pi
             if event.key == pygame.K_UP:
                 y_player_move_up += 0.18
             if event.key == pygame.K_DOWN:
@@ -110,12 +115,16 @@ while applicationProcess:
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT:
                 x_player_move_left = 0
+                player_tilt += -math.pi
             if event.key == pygame.K_RIGHT:
                 x_player_move_right = 0
+                player_tilt += math.pi
             if event.key == pygame.K_UP:
                 y_player_move_up = 0
             if event.key == pygame.K_DOWN:
                 y_player_move_down = 0
+            if event.key == pygame.K_LEFT and event.key == pygame.K_RIGHT:
+                player_tilt = 0
 
     x_player -= x_player_move_left
     x_player += x_player_move_right
@@ -132,7 +141,7 @@ while applicationProcess:
     elif y_player >= 535:
         y_player = 535
 
-    player(x_player, y_player)
+    player(x_player, y_player, player_tilt)
 
     # Draw Asteroids
     angle_asteroid += 0.05
